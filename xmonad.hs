@@ -15,6 +15,7 @@
 -}
 
 import XMonad
+import XMonad.Hooks.ICCCMFocus
 import XMonad.Hooks.SetWMName
 import XMonad.Layout.Grid
 import XMonad.Layout.ResizableTile
@@ -44,7 +45,8 @@ myFocusedBorderColor = "#ff0000"      -- color of focused border
 myNormalBorderColor  = "#cccccc"      -- color of inactive border
 myBorderWidth        = 1              -- width of border around windows
 myTerminal           = "terminator"   -- which terminal software to use
-myIMRosterTitle      = "Contact List" -- title of roster on IM workspace
+myIMRosterTitle      = "Buddy List"   -- title of roster on IM workspace
+mySkypeTitle         = "choonkeeoh - Skype™"
 
 
 {-
@@ -86,7 +88,7 @@ myUrgentWSRight = "}"
 
 myWorkspaces =
   [
-    "7:Chat",  "8:Dbg", "9:Pix",
+    "7:Chat",  "8:Dbg", "9:Skype",
     "4:Docs",  "5:Dev", "6:Web",
     "1:Term",  "2:Hub", "3:Mail",
     "0:VM",    "Extr1", "Extr2"
@@ -156,6 +158,7 @@ defaultLayouts = smartBorders(avoidStruts(
 -- configured for Empathy, so if you're using something else you
 -- will want to modify that variable.
 chatLayout = avoidStruts(withIM (1%7) (Title myIMRosterTitle) Grid)
+skypeLayout = avoidStruts(withIM (1%7) (Title mySkypeTitle) Grid)
 
 -- The GIMP layout uses the ThreeColMid layout. The traditional GIMP
 -- floating panels approach is a bit of a challenge to handle with xmonad;
@@ -169,7 +172,7 @@ gimpLayout = smartBorders(avoidStruts(ThreeColMid 1 (3/100) (3/4)))
 -- layouts.
 myLayouts =
   onWorkspace "7:Chat" chatLayout
-  $ onWorkspace "9:Pix" gimpLayout
+  $ onWorkspace "9:Skype" skypeLayout
   $ defaultLayouts
 
 
@@ -264,7 +267,7 @@ myManagementHooks = [
   , (className =? "Komodo IDE" <&&> resource =? "Toplevel") --> doFloat
   , (className =? "Empathy") --> doF (W.shift "7:Chat")
   , (className =? "Pidgin") --> doF (W.shift "7:Chat")
-  , (className =? "Gimp-2.8") --> doF (W.shift "9:Pix")
+  , (className =? "Skype") --> doF (W.shift "9:Skype")
   ]
 
 
@@ -348,7 +351,7 @@ main = do
   , manageHook = manageHook defaultConfig
       <+> composeAll myManagementHooks
       <+> manageDocks
-  , logHook = dynamicLogWithPP $ xmobarPP {
+  , logHook = takeTopFocus >> dynamicLogWithPP ( xmobarPP {
       ppOutput = hPutStrLn xmproc
       , ppTitle = xmobarColor myTitleColor "" . shorten myTitleLength
       , ppCurrent = xmobarColor myCurrentWSColor ""
@@ -357,6 +360,6 @@ main = do
         . wrap myVisibleWSLeft myVisibleWSRight
       , ppUrgent = xmobarColor myUrgentWSColor ""
         . wrap myUrgentWSLeft myUrgentWSRight
-    }
+    })
   }
     `additionalKeys` myKeys

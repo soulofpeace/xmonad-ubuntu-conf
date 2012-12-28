@@ -13,13 +13,13 @@
 #
 
 # Empathy chat client (-h: start hidden, -n: don't connect on launch)
-if [ -z "$(pgrep empathy)" ] ; then
-    empathy -h -n &
+if [ -z "$(pgrep pidgin)" ] ; then
+    pidgin  -n &
 fi
 
 # Remmina remote desktop connection client (-i: start hidden)
-if [ -z "$(pgrep remmina)" ] ; then
-    remmina -i &
+if [ -z "$(pgrep davmail)" ] ; then
+    davmail &
 fi
 
 # Network manager, so we don't have to configure wifi at the command line.
